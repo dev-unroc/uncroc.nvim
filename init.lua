@@ -89,6 +89,8 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
+vim.keymap.set('i', 'jk', '<Esc>')
+vim.keymap.set('t', 'jk', '<C-\\><C-n>')
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -102,7 +104,7 @@ vim.opt.number = true
 -- vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
-vim.opt.mouse = 'a'
+vim.opt.mouse = ''
 
 -- Don't show the mode, since it's already in status line
 vim.opt.showmode = false
@@ -148,6 +150,12 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+vim.opt.wrap = false -- sets vim.opt.wrap
+vim.opt.whichwrap = 'bs<>[]hl'
+
+-- vim.opt.shiftwidth = 2
+-- vim.opt.tabstop = 2
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -168,6 +176,9 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.keymap.set('v', 'p', '"_dP', { desc = 'Paste without yanking' })
+vim.keymap.set('x', 'K', ":move '<-2<CR>gv-gv", { desc = 'Move block up' })
+vim.keymap.set('x', 'J', ":move '>+1<CR>gv-gv", { desc = 'Move block down' })
 
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
@@ -652,13 +663,16 @@ require('lazy').setup {
       --    you can use this plugin to help you. It even has snippets
       --    for various frameworks/libraries/etc. but you will have to
       --    set up the ones that are useful for you.
-      -- 'rafamadriz/friendly-snippets',
+      'rafamadriz/friendly-snippets',
     },
     config = function()
       -- See `:help cmp`
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
       luasnip.config.setup {}
+      require('luasnip.loaders.from_vscode').lazy_load()
+      luasnip.filetype_extend('html', { 'angular' })
+      luasnip.filetype_extend('typescript', { 'angular' })
 
       cmp.setup {
         snippet = {
@@ -681,7 +695,7 @@ require('lazy').setup {
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ['<Enter>'] = cmp.mapping.confirm { select = true },
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
